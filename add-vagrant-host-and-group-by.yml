@@ -1,0 +1,45 @@
+---
+
+- name: Provision a vagrant machine
+  hosts: localhost
+  vars:
+    box: trusty64
+  tasks:
+    - name: Create a Vagrantfile
+      command: vagrant init {{ box }} creates=Vagrantfile
+
+    - name: Bring up a vagrant machine
+      command: vagrant up
+
+    - name: Add the vagrant machine to the inventory
+      # Модуль add_host добавляет хост только на время исполнения сценария
+      add_host: >
+          name=vagrant4
+          ansible_host=127.0.0.1
+          ansible_port=2225
+          ansible_user=vagrant
+          ansible_private_key_file=~/.vagrant.d/insecure_private_key
+
+#- name: Do smth to the vagrant machine
+#  hosts: vagrant
+#  become: yes
+#  tasks:
+
+- name: Group hosts by distribution
+  hosts: myhosts
+  gather_facts: True
+  tasks:
+    - name: Create groups based on distr
+      group_by: key={{ ansible_distribution }}
+    - name: Do smth to Ubuntu hosts
+      hosts: Ubuntu
+      tasks:
+        - name: Install htop
+          apt: name=htop
+        # ...
+    - name: Do smth else to Centos hosts
+      hosts: CentOS
+      tasks:
+        - name: Install htop
+          yum: name=htop
+        # ...
