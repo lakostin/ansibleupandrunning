@@ -13,3 +13,15 @@ sudo pip install paramiko
 
 # Get hosts from dynamic inventory
 ./inventory/vagrant.py --list
+
+# Ch5
+# Mezzanine up
+virtualenv venv
+sudo dnf install python2-virtualenv
+source venv/bin/activate
+pip install mezzanine
+mezzanine-project myproject
+cd myproject
+sed -i.bak 's/ALLOWED_HOSTS = \[\]/ALLOWED_HOSTS = ["127.0.0.1"]/' myproject\/settings.py
+python manage.py createdb
+python manage.py runserver
